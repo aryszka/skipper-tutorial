@@ -1,0 +1,17 @@
+// 404 as catchall:
+notFound: * -> modPath(".*", "/404.html") -> static("", ".") -> <shunt>;
+
+// content page:
+content: Path("/notes/:fn") -> modPath("^/notes/", "/") -> "http://localhost:9091";
+
+// post content:
+update: Path("/notes/:fn") && Method("POST") -> modPath("^/notes/", "/") -> "http://localhost:9092";
+
+// post redirect:
+postRedirect: Path("/:fn") -> modPath("^/", "/notes/") -> redirect(302, "http:") -> <shunt>;
+
+// new version of update:
+newUpdate:
+    Path("/notes/:fn") && Method("POST") && Header("X-New", "true")
+    -> modPath("^/notes/", "/")
+    -> "http://localhost:9093";
