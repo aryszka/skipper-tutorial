@@ -14,11 +14,13 @@ func writeContent(path, content string) error {
 
 func handle(w http.ResponseWriter, r *http.Request) {
 	err := writeContent(path.Join(".", r.URL.Path), r.FormValue("content"))
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+	if err == nil {
+		w.Header().Set("Location", path.Join(r.URL.Path, "success"))
+	} else {
+		log.Println(err)
+		w.Header().Set("Location", path.Join(r.URL.Path, "failure"))
 	}
 
-	w.Header().Set("Location", r.URL.Path)
 	w.WriteHeader(http.StatusSeeOther)
 }
 
