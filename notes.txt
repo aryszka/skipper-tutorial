@@ -1,7 +1,10 @@
 [demo]
 nothing
-404 page
-a service: display a file
+404 page, general error
+a service: display a file, no content -> create content, point out the problem of the not found on view
+simplify the regexp to a modPath template
+show how to 
+display it as text/plain (comment on json)
 different services: GET displays the file, POST changes the file
 routes from etcd
 different versions of the same service
@@ -15,3 +18,10 @@ the redirect filter should use the the incoming schema from the request if not s
 the double redirect should somehow changed, it would be nice if the path and status code would be modifiable on
 the response and method on the request
 rename get.go to show.go and set.go to update.go
+
+[to skipper]
+basic filters:
+- set status
+- http not taken as default scheme in redirect
+- path parameters referenced as $name
+https

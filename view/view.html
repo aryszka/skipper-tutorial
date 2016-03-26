@@ -3,9 +3,15 @@
     <head>
         <meta charset="utf-8" />
         <title>Skipper Tutorial - Page Not Found</title>
+        <style>
+		* {font-family: sans-serif}
+        </style>
     </head>
     <body>
         <h1>Skipper Tutorial</h1>
-        <p>The requested page cannot be found.</p>
+        <h3>{{.Title}}</h3>
+        <code>
+            {{.Content}}
+        </code>
     </body>
 </html>

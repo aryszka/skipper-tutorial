@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Skipper Tutorial - Page Not Found</title>
+        <style>
+		* {font-family: sans-serif}
+		.editor{
+			display: block;
+			width: 75%;
+			height: 180px;
+		}
+        </style>
+    </head>
+    <body>
+        <h1>Skipper Tutorial</h1>
+        <h3 class="name"></h3>
+        <textarea class="editor"></textarea>
+		<button class="save">Save</button>
+		<script>
+
+const getName = () => { return window.location.pathname.split("/")[2]; };
+
+const displayName = (name, changed) => {
+	document.querySelector(".name").innerHTML = (changed && "*" || "") + name;
+};
+
+const display = (name, content) => {
+	if (content === undefined) {
+		displayName(name, true);
+	} else {
+		displayName(name, false);
+		document.querySelector(".editor").value = content;
+	}
+};
+
+const isSuccess = (response) => {
+	return response.status >= 200 && response.status < 300;
+};
+
+const loadContent = (name) => {
+	return (
+		fetch("/content/" + name + "/plain")
+		.then((response) => {
+			if (isSuccess(response)) {
+				return response.text();
+			}
+		})
+	);
+};
+
+const save = (name) => {
+	fetch("/content/" + name, {
+		method: "put",
+		body: document.querySelector(".editor").value
+	})
+	.then((response) => {
+		if (isSuccess(response)) {
+			displayName(name, false);
+		}
+	});
+};
+
+const name = getName();
+loadContent(name).then(display.bind(this, name));
+document.querySelector(".editor").addEventListener("keydown", displayName.bind(this, name, true));
+document.querySelector(".save").addEventListener("click", save.bind(this, name));
+
+		</script>
+    </body>
+</html>

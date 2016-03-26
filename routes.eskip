@@ -1,47 +1,24 @@
 // 404 as catchall:
-notFound: * -> modPath(".*", "/404.html") -> static("", ".") -> <shunt>;
+notFound: * -> status(404) -> modPath(".*", "/404.html") -> static("", "static-content") -> <shunt>;
 
-// // content page:
-// content:
-//     Method("GET") && Path("/notes/:fn") && HeaderRegexp("Cookie", "version=old")
-//     -> modPath("^/notes/", "/") -> "http://localhost:9091";
+static: Path("/static/:fn") -> static("/static", "static-content") -> <shunt>;
 
-// update:
+// View content as plain or html:
+view:
+	Path("/content/:fn/:format")
+	-> modPath(".*", "/{{.fn}}")
+	-> setRequestHeader("Accept", "text/{{.format}}")
+	-> "http://localhost:9091";
+
+// Update content:
 update:
-    Method("POST") && Path("/notes/:fn")
-    -> auth()
-    -> modPath("^/notes/", "/")
-    -> "http://localhost:9092";
+	Method("PUT") && Path("/content/:fn")
+	-> modPath(".*", "/{{.fn}}")
+	-> "http://localhost:9092";
 
-// post result:
-postSuccess:
-    Path("/:fn/success")
-    -> modPath("^/", "/notes/")
-    -> modPath("/success$", "")
-    -> redirectTo(302, "http:")
-    -> <shunt>;
-postFailure:
-    Path("/:fn/failure")
-    -> modPath(".*", "/error.html")
-    -> static("", ".")
-    -> <shunt>;
-
-// new version of the content page:
-contentTestTriggerNew:
-    Method("GET") && Path("/notes/:fn/new-version")
-    -> responseHeader("Set-Cookie", "version=new")
-    -> modPath("/new-version$", "")
-    -> redirectTo(302, "http:")
-    -> <shunt>;
-contentTestTriggerOld:
-    Method("GET") && Path("/notes/:fn/old-version")
-    -> responseHeader("Set-Cookie", "version=old")
-    -> modPath("/old-version$", "")
-    -> redirectTo(302, "http:")
-    -> <shunt>;
-contentNew:
-    Method("GET") && Path("/notes/:fn")
-    -> modPath("^/notes/", "/")
-    -> "http://localhost:9093";
-
-etcd: Path("/v2/keys/*_") -> auth() -> "http://localhost:2379";
+// Editor ui:
+edit:
+	Path("/content/:fn/edit")
+	-> modPath(".*", "/edit.html")
+	-> static("", "static-content")
+	-> <shunt>

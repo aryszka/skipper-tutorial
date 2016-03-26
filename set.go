@@ -6,9 +6,15 @@ import (
 	"net/http"
 	"os"
 	"path"
+    "errors"
+    "strings"
 )
 
 func writeContent(path, content string) error {
+    if strings.Index(content, "swear") >= 0 {
+        return errors.New("this is a swear")
+    }
+
 	return ioutil.WriteFile(path, []byte(content), os.ModePerm)
 }
 
